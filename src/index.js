@@ -31,14 +31,14 @@ app.post("/signup", async (req, res) => {
     password: req.body.password,
   };
 
-  // check if the user already exists in the database
+  // Verifique se o usuário já existe no banco de dados
 
   const existingUser = await collection.findOne({ name: data.name });
 
   if (existingUser) {
     res.send("Usuário existente. Por favor use um usuário diferente.");
   } else {
-    //hash the password using bcrypt
+    //Hash da senha usando o bcrypt
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(data.password, saltRounds);
 
@@ -56,6 +56,7 @@ app.post("/login", async (req, res) => {
     const check = await collection.findOne({ name: req.body.username });
     if (!check) {
       res.send("O nome de usuário não pode ser encontrado");
+      return;
     }
 
     //Compare the hash password form the database with the plain text
@@ -63,13 +64,14 @@ app.post("/login", async (req, res) => {
       req.body.password,
       check.password
     );
+
     if (isPasswordMatch) {
       res.render("home");
     } else {
-      req.send("wrong password");
+      req.send("Senha incorreta");
     }
   } catch {
-    res.send("wrong details");
+    res.send("Detalhes incorretos");
   }
 });
 
